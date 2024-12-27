@@ -5,21 +5,21 @@ Vagrant_API_Version="2"
 
 Vagrant.configure(Vagrant_API_Version) do |config|
   # Node01
-  config.vm.define "k8s-node01" do |cfg|
-    cfg.vm.box = "generic/ubuntu2004"
-    cfg.vm.box_version = "3.1.16"
-    cfg.vm.provider:virtualbox do |vb|
-      vb.name = "K8s-Node01"
-      vb.cpus = 1
-      vb.memory = 1024
-    end
-    cfg.vm.hostname = "k8s-node01"
-    cfg.vm.network "private_network", ip: "192.168.32.11"
-    cfg.vm.network "forwarded_port", guest: 22, host: 24022, auto_correct: false, id: "ssh"
-    cfg.vm.network "forwarded_port", guest: 80, host: 40080
-    cfg.vm.network "forwarded_port", guest: 8080, host: 48080
-    cfg.vm.provision "shell", path: "sshd_config.sh"
-  end
+  # config.vm.define "k8s-node01" do |cfg|
+  #   cfg.vm.box = "generic/ubuntu2004"
+  #   cfg.vm.box_version = "3.1.16"
+  #   cfg.vm.provider:virtualbox do |vb|
+  #     vb.name = "K8s-Node01"
+  #     vb.cpus = 1
+  #     vb.memory = 1024
+  #   end
+  #   cfg.vm.hostname = "k8s-node01"
+  #   cfg.vm.network "private_network", ip: "192.168.32.11"
+  #   cfg.vm.network "forwarded_port", guest: 22, host: 24022, auto_correct: false, id: "ssh"
+  #   cfg.vm.network "forwarded_port", guest: 80, host: 40080
+  #   cfg.vm.network "forwarded_port", guest: 8080, host: 48080
+  #   cfg.vm.provision "shell", path: "sshd_config.sh"
+  # end
 
   # # Node02
   # config.vm.define:"k8s-node02" do |cfg|
@@ -44,11 +44,15 @@ Vagrant.configure(Vagrant_API_Version) do |config|
         vb.name="K8s-Master"
         vb.cpus = 2
         vb.memory = 2048
+        vb.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
+        vb.customize ["modifyvm", :id, "--uartmode1", "file", File::NULL]
+        vb.customize [ "modifyvm", :id, "--uart1", "0x3F8", "4" ]
+        vb.customize [ "modifyvm", :id, "--cableconnected1", "on" ]
     end
     cfg.vm.hostname = "k8s-master"
     cfg.vm.synced_folder ".", "/vagrant"
     cfg.vm.network "private_network", ip: "192.168.32.10"
-    cfg.vm.network "forwarded_port", guest: 22, host: 21022, auto_correct: false, id: "ssh"
+    cfg.vm.network "forwarded_port", guest: 22, host: 22022, auto_correct: false, id: "ssh"
     cfg.vm.network "forwarded_port", guest: 80, host: 10080
     cfg.vm.network "forwarded_port", guest: 8000, host: 18000
     cfg.vm.network "forwarded_port", guest: 8001, host: 18001
